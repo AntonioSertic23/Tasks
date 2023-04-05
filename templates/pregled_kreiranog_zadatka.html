@@ -1,0 +1,460 @@
+<!-- NAVIGACIJA -->
+<nav
+  class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top"
+  ng-init="CheckLoggedIn();"
+>
+  <a class="navbar-brand" href="">Avoca To-Do!</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="#!moji_zadaci">Moji zadaci</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#!kreirani_zadaci">Kreirani zadaci</a>
+      </li>
+    </ul>
+
+    <div class="dropdown">
+      <button
+        class="btn btn-warning dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        {{logiran}}
+      </button>
+      <div
+        class="dropdown-menu dropdown-menu-right text-center"
+        aria-labelledby="dropdownMenuButton"
+      >
+        <a class="dropdown-item" href="#!user">Moj profil</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#!postavke">Postavke</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="" ng-click="Odjava()">Odjava</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div
+  class="sredinaUser"
+  ng-init="PrikaziZasebniKreiraniZadatak(); PrikaziKomentare()"
+>
+  <div class="container-zadatak">
+    <div
+      ng-class="{'card': zadatak.stanje == 0, 'card-dovrsen':  zadatak.stanje == 1}"
+    >
+      <form>
+        <div class="d-flex justify-content-sm-around">
+          <h5 class="pregled_zadatak_naziv">
+            {{zadatak.naziv}}
+          </h5>
+        </div>
+        <div class="form-group">
+          <p>
+            <span>Datum početka:</span> {{zadatak.datum_pocetka | date:
+            'dd-MM-yyyy' | promjenaFormata}}
+          </p>
+        </div>
+        <div class="form-group">
+          <p>
+            <span>Datum Završetka:</span> {{zadatak.datum_zavrsetka | date:
+            'dd-MM-yyyy' | promjenaFormata}}
+          </p>
+        </div>
+        <div class="form-group otvori_korisnika">
+          <p>
+            <span>Izvršitelj: </span
+            ><a href="" ng-click="DohvatiDrugogKorisnika(zadatak.izvrsitelj)"
+              >{{zadatak.izvrsitelj}}</a
+            >
+          </p>
+        </div>
+        <div class="form-group">
+          <p><span>Stanje:</span> {{zadatak_stanje}}</p>
+        </div>
+        <div class="form-group">
+          <p>
+            <span>Opis: </span>
+          </p>
+          <div class="zadatak_opis">
+            {{zadatak.opis}}
+          </div>
+        </div>
+        <div class="form-group komentiranje text-right">
+          <button class="btn btn-dark" ng-click="modalKomentiranje()">
+            <i class="fa fa-comments fa-lg" aria-hidden="true"></i>
+          </button>
+          <button class="btn btn-dark" ng-click="UrediZadatakModal()">
+            <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+          </button>
+          <button class="btn btn-dark" ng-click="ObrisiZadatakModal()">
+            <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+          </button>
+          <button
+            ng-if="zadatak.stanje == 1"
+            class="btn btn-dark"
+            ng-click="VratiNaIzvrsavanjeModal()"
+          >
+            <i class="fa fa-undo fa-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="container-komentar">
+    <article class="align-top" ng-repeat="komentar in komentari">
+      <div class="text-center card_komentar">
+        <div class="card-body">
+          <div class="d-flex justify-content-between col-md-12">
+            <div class="komentar_kreator">
+              <h4>
+                <a href="" ng-click="DohvatiDrugogKorisnika(komentar.korisnik)"
+                  >{{komentar.korisnik}}</a
+                >
+              </h4>
+            </div>
+
+            <div>
+              <h5>
+                {{komentar.datum | date: 'dd-MM-yyyy' | promjenaFormata }}
+              </h5>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-start col-md-12">
+            <p class="komentar_opis">
+              {{komentar.opis}}
+            </p>
+          </div>
+
+          <div
+            class="d-flex justify-content-end col-md-12"
+            ng-if="komentar.korisnik == logiran"
+          >
+            <button
+              class="btn btn-dark"
+              style="margin-right: 10px;"
+              ng-click="UrediKomentarModal(komentar.id, komentar.opis)"
+            >
+              <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+            </button>
+            <button
+              class="btn btn-dark"
+              ng-click="ObrisiKomentarModal(komentar.id, komentar.opis)"
+            >
+              <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-copyright">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <p>
+            Copyright Avoca To-Do! © 2020.
+            <span class="novired">All rights reserved.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Obrsi zadatak -->
+<div class="modal fade" id="modalObrsiZadatak">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title w-100 text-center">Brisanje zadatka</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Jeste li sigurni da želite obrisati zadatak: <b>{{naziv_zadatka}}</b>?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" ng-click="ObrisiZadatak()" class="btn btn-dark">
+          Obriši
+        </button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">
+          Zatvori
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Uredi zadatak -->
+<div class="modal fade" id="modalUrediZadatak">
+  <div class="modal-dialog modal-lg" ng-init="DohvatiKorisnike()">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title w-100 text-center">Uredi zadatak</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div
+          class="alert {{alertClass}} alert-dismissible text-center"
+          ng-show="alertMsg"
+        >
+          <a href="" class="close" ng-click="closeMsg()" aria-label="close"
+            >&times;</a
+          >{{alertMessage}}
+        </div>
+
+        <form name="NoviZadatakForm" method="POST">
+          <div class="form-group">
+            <label for="inputNaziv">Naziv</label>
+            <input
+              type="text"
+              class="form-control"
+              id="inputNaziv"
+              ng-model="edit_naziv"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="inputDatumPocetka">Datum početka</label>
+            <input
+              type="date"
+              class="form-control"
+              id="inputDatumPocetka"
+              ng-model="edit_datum_pocetka "
+              placeholder="dd-MM-yyyy"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="inputDatumZavrsetka">Datum završetka</label>
+            <input
+              type="date"
+              class="form-control"
+              id="inputDatumZavrsetka"
+              ng-model="edit_datum_zavrsetka"
+              placeholder="dd-MM-yyyy"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="inputIzvrsitelj">Izvršitelj</label>
+            <select
+              class="form-control"
+              id="inputIzvrsitelj"
+              ng-model="edit_izvrsitelj"
+              style="height: 40px;"
+              ng-options="korisnicko_ime for korisnicko_ime in korisnicka_imena"
+            >
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="inputOpis">Opis</label>
+            <input
+              type="text"
+              class="form-control"
+              id="inputOpis"
+              placeholder="Opis"
+              ng-model="edit_opis"
+            />
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="submit" ng-click="UrediZadatak()" class="btn btn-dark">
+          Uredi
+        </button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">
+          Zatvori
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Komentiranje -->
+<div class="modal fade" id="modalKomentiranje">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title w-100 text-center">Dodaj komentar</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="NoviZadatakForm" method="POST">
+          <div class="form-group">
+            <label for="inputKomentar">Komentar</label>
+            <textarea
+              type="text"
+              class="form-control"
+              id="inputKomentar"
+              placeholder="..."
+              ng-model="komentar"
+              rows="3"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="submit"
+          ng-click="Komentiranje(zadatak.id)"
+          class="btn btn-dark"
+        >
+          Objavi
+        </button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">
+          Zatvori
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Uredi komentar -->
+<div class="modal fade" id="modalUrediKomentar">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title w-100 text-center">Uredi komentar</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form name="NoviZadatakForm" method="POST">
+          <div class="form-group">
+            <label>Komentar</label>
+            <textarea
+              type="text"
+              class="form-control"
+              ng-model="edit_komentar_opis"
+              rows="3"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="submit" ng-click="UrediKomentar()" class="btn btn-dark">
+          Uredi
+        </button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">
+          Zatvori
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Obrsi Komentar -->
+<div class="modal fade" id="modalObrisiKomentar">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title w-100 text-center">Brisanje komentara</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Jeste li sigurni da želite obrisati taj komentar?
+        </p>
+        <textarea
+          type="text"
+          class="form-control"
+          ng-model="delete_komentar_opis"
+          rows="3"
+          disabled
+        ></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" ng-click="ObrisiKomentar()" class="btn btn-dark">
+          Obriši
+        </button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">
+          Zatvori
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vrati na izvrsavanje -->
+<div class="modal fade" id="modalVratiNaIzvrsavanje">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title w-100 text-center">Vrati na izvršavanje</h4>
+        <button type="button" class="close" data-dismiss="modal">
+          &times;
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Potvrdite vraćanje zadatka <b>{{naziv_zadatka}}</b> u fazu
+          izvršavanja.
+        </p>
+        <label for="inputKomentar">Ostavite komentar:</label>
+        <textarea
+          type="text"
+          class="form-control"
+          id="inputKomentar"
+          placeholder="..."
+          ng-model="izvrsavanje_komentar"
+          rows="3"
+        ></textarea>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="submit"
+          ng-click="VratiNaIzvrsavanje()"
+          class="btn btn-dark"
+        >
+          Potvrdi
+        </button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">
+          Zatvori
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

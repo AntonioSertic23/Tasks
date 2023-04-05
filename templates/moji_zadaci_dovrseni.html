@@ -1,0 +1,201 @@
+<!-- NAVIGACIJA -->
+<nav
+  class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top"
+  ng-init="CheckLoggedIn();"
+>
+  <a class="navbar-brand" href="">Avoca To-Do!</a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#!moji_zadaci"
+          >Moji zadaci<span class="sr-only">(current)</span></a
+        >
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#!kreirani_zadaci">Kreirani zadaci</a>
+      </li>
+    </ul>
+
+    <div class="dropdown">
+      <button
+        class="btn btn-warning dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        {{logiran}}
+      </button>
+      <div
+        class="dropdown-menu dropdown-menu-right text-center"
+        aria-labelledby="dropdownMenuButton"
+      >
+        <a class="dropdown-item" href="#!user">Moj profil</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#!postavke">Postavke</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="" ng-click="Odjava()">Odjava</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="sredinaUser" ng-init="dohvatiDovrseneZadatke()">
+  <!-- Izbornik -->
+  <div class="izbornik d-flex justify-content-sm-around">
+    <!-- Trazilica -->
+    <div class="d-inline-block form-group has-search w-40">
+      <span class="fa fa-search form-control-feedback"></span>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Pretraži.."
+        ng-model="inputTekst"
+      />
+    </div>
+    <!-- Sortiranje po moji/dovrseni -->
+    <div class="d-inline-block dropdown">
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Dovršeni zadaci
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="" ng-click="goToObicni()">Moji zadaci</a>
+      </div>
+    </div>
+    <!-- Sortiranje -->
+    <div class="d-inline-block dropdown">
+      <button
+        class="btn btn-dark dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Sortiraj po..
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="" ng-click="setOrderProperty('naziv')"
+          >Nazivu</a
+        >
+        <a class="dropdown-item" href="" ng-click="setOrderProperty('kreator')"
+          >Kreatoru</a
+        >
+        <a
+          class="dropdown-item"
+          href=""
+          ng-click="setOrderProperty('datum_pocetka')"
+          >Datumu početka</a
+        >
+        <a
+          class="dropdown-item"
+          href=""
+          ng-click="setOrderProperty('datum_zavrsetka')"
+          >Datumu završetka</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Zadaci -->
+  <div class="container-fluid">
+    <div class="row">
+      <article
+        class="align-top"
+        ng-repeat="zadatak in zadaci  | orderBy:orderProperty | filter: inputTekst "
+      >
+        <div
+          class="text-center card-dovrsen"
+          style="width: 25rem; height: 335px;"
+        >
+          <div class="card-body">
+            <div class="d-flex justify-content-center">
+              <h5 class="zadatak_naziv text-center">
+                {{zadatak.naziv}}
+              </h5>
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-10 zadatak_datumi">
+                {{zadatak.datum_pocetka | date: 'dd-MM-yyyy' | promjenaFormata
+                }}
+                <i class="fa fa-arrow-right datum_arrow" aria-hidden="true"></i>
+                {{zadatak.datum_zavrsetka | date: 'dd-MM-yyyy' | promjenaFormata
+                }}
+              </div>
+            </div>
+
+            <div class="row justify-content-start">
+              <div class="zadatak_kreator">
+                Kreator:
+                <a href="" ng-click="DohvatiDrugogKorisnika(zadatak.kreator)"
+                  >{{zadatak.kreator}}</a
+                >
+              </div>
+            </div>
+
+            <div class="row justify-content-start">
+              <div class="detalji" style="font-weight: 700;">
+                Detalji:
+              </div>
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-10 zadatak_opis">
+                {{zadatak.opis | strLimit: 110 }}
+              </div>
+            </div>
+
+            <div class="row justify-content-end">
+              <div class="col-3 zadatak_button">
+                <a
+                  href=""
+                  ng-click="OtvoriZasebniZadatak(zadatak.id)"
+                  class="btn btn-dark"
+                >
+                  <i class="fa fa-plus" aria-hidden="true"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-copyright">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <p>
+            Copyright Avoca To-Do! © 2020.
+            <span class="novired">All rights reserved.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
