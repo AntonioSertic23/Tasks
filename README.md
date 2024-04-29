@@ -8,7 +8,7 @@ The project's objective was to create a task management program with user authen
 
 The webpage showcases knowledge of the following web technologies: **AngularJS v1.6.9** with **jQuery 3.2.1**, **PHP 7**, and **Bootstrap 4.4.1** for design. **MySQL** was used as the database.
 
-[![My Skills](https://skills.thijs.gg/icons?i=angular,jquery,php,bootstrap,mysql)](https://skills.thijs.gg)
+[![My Skills](https://skillicons.dev/icons?i=angular,jquery,php,bootstrap,mysql)](https://skillicons.dev)
 
 ---
 
